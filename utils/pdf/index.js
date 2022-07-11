@@ -42,60 +42,112 @@ async function createPDF(html, filePath) {
  * @returns {string}
  */
 const generateCompensationPDF = (txnId, ipfsCids, nfts, burnReceipt) => {
-  function renderTable() {
-    return nfts.map(
-      (nft) => `
-<tr>
-    <th>${nft.metadata.properties.title}</th>
-    <th>${nft.metadata.description}</th>
-    <th>${burnReceipt[nft.asa_id]}</th>
-    <th>${nft.metadata.properties.serial_number}</th>
-    <th>${nft.asa_id}</th>
-</tr>
-    `,
-    )
-  }
-
-  function renderCertificates(cids) {
-    return cids.map(
-      (cid) => `
-<li style="color: #364237; text-transform: capitalize; padding: 0px 10px;">
-    <a href="https://cloudflare-ipfs.com/ipfs/${cid}">View certificate</a>
-</li>
-    `,
-    )
-  }
-
+  console.log(txnId, ipfsCids, nfts, burnReceipt)
   return `
-<html>
-  <body style=" max-width: 2480px; padding: 20px;">
-    <div style="margin-bottom: 15px; display: flex; flex-direction:column;">
-        <h2>Consolidation Certificate</h2>
-        <h4>Content ID: ${ipfsCids.join(', ')}</h4>
-        <h4>Transaction ID: <a href="https://testnet.algoexplorer.io/tx/group/${txnId}">${txnId}</a></h4>
-    </div>
-    <div style=" max-width: 90%;">
-      <table >
-        <thead>
-          <tr style="color: #364237; text-transform: capitalize; padding: 0px 10px;">
-            <th>title</th>
-            <th>description</th>
-            <th>amount</th>
-            <th>serial number</th>
-            <th>asset id</th>
-          </tr>
-          </thead>
-          <tbody>
-            ${renderTable().join('')}
-          </tbody>
-      </table>
-      <h2>Registry certificates</h2>
-      <ul>
-        ${renderCertificates(ipfsCids).join('')}
-      </ul>
-    </div>
-  </body>
-</html>
+    <html>
+      <body style=" max-width: 100% ">
+          <div style="width: 100%; margin-bottom: 30px; padding: 72px; display: flex; flex-direction:column; background-color: #364237">
+              <h2 style="width: 800px; font-size:78px; color: #00db7d">
+                    ${nft.metadata.properties.title} compensation certificate
+              </h2>
+              <p style="width: 788px; font-size: 26px; color: #fcfcfd">
+                    You have compensate <strong>543.12 t</strong> of <strong>CO2</strong> for this project from ClimateCoin.
+                    This certificate is official, created and validated by Climatecoin.
+              </p>
+          </div>
+        <div style="width: 100%; padding: 72px;">
+          <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 36px;">
+            <dl style="grid-column: 1 / 3; grid-row: 1 ; border: 1px #e6e8ec solid; border-radius: 8px; padding: 24px; margin:0px" >
+                  <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                        Project
+                  </dt>
+                  <dd style="margin-bottom: 16px; margin-left:0px">
+                       ${nft.metadata.properties.title} 
+                  </dd>
+                <hr/>
+                <div style=" display: grid; grid-template-columns: 1fr 1fr ; grid-template-rows: 1fr 1fr">
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                         Standard
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                         ${nft.metadata.properties.standard} 
+                      </dd>
+                  </div>
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                          Serial Number
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                          ${nft.metadata.properties.serial_number} 
+                      </dd>
+                  </div>
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                         Total climatecoins
+                      </dt>
+                      <dd style="font-weight: 500; line-height: 1.71; margin-inline-start: 0px; text-align: left; color: #00db7d;">
+                          ${nft.metadata.properties.supply}
+                      </dd>
+                  </div>
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                          Total
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                          ${nft.metadata.properties.supply}
+                      </dd>
+                  </div>
+                </div>
+                <hr/>
+                <div style=" display: grid; grid-template-columns: 1fr 1fr ; grid-template-rows: 1fr">
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                          ID project
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                          ${nft.metadata.properties.asa_id}
+                      </dd>
+                  </div>
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                          Registry
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                          ${nft.metadata.properties.registry}
+                      </dd>
+                  </div>
+                </div>
+                <hr/>
+                <div style=" display: grid; grid-template-columns: 1fr 1fr ; grid-template-rows: 1fr ">
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                          ID Transaction
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                          ${nft.metadata.properties.txnId}
+                      </dd>
+                  </div>
+                  <div>
+                      <dt style="margin:10px 0px; font-size: 14px; line-height: 1.71; text-align: left; color: #777e90;">
+                          Network
+                      </dt>
+                      <dd style="margin-bottom: 16px; margin-left:0px">
+                          Algorand
+                      </dd>
+                  </div>
+                </div>
+            </dl>
+            <div style=" grid-column: 3; justify-self:center; padding: 54px 40px 22px 40px;border-radius: 12px; border: solid 1px #e6e8ec;">
+                <img style="background-color:red; width: 270px; height: 270px;"/>
+                <p style="padding-top:20px; width: 247px;">
+                   Scan the code to view the transaction on the blockchain network
+                </p>
+            </div>
+        </div>
+        </div>
+      </body>
+    </html>
 `
 }
 module.exports = {
