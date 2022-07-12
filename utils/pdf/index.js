@@ -1,3 +1,5 @@
+import Logo from '../../admin/src/assets/images/logo-light.png'
+
 const puppeteer = require('puppeteer')
 const path = require('path')
 
@@ -45,12 +47,20 @@ const generateCompensationPDF = (txnId, ipfsCids, nfts, burnReceipt) => {
   console.log(txnId, ipfsCids, nfts, burnReceipt)
   return `
   <html>
-   <body style=" max-width: 100% ">
-      <div style="width: 100%; margin-bottom: 30px; padding: 72px; display: flex; flex-direction:column; background-color: #364237">
-         <h2 style="width: 800px; font-size:78px; color: #00db7d">${nft.metadata.properties.title} compensation certificate</h2>
-         <p style="width: 788px; font-size: 26px; color: #fcfcfd">You have compensate <strong>543.12 t</strong> of <strong>CO2</strong> for this project from ClimateCoin.
+  <body style="max-width: 100% ">
+      <div style="width: 100%; padding: 72px; display: grid; grid-template-rows: 1fr 1fr 1fr; background-color: #364237">
+        <div style="width: 100%; height: max-content;  display: grid; grid-template-rows: 1fr;">
+             <img src="url(${Logo})" style="width: 220px; font-size: 26px; color: #f4f5f6; grid-row: 1/2"/>
+        <div style="font-size: 18px; text-align:right; grid-row: 1/2">
+             <p style="color: #fcfcfd">14 julio 2022</p>
+             <p style="color: #b1b5c3;">#443-765-998</p>
+        </div>
+            <hr style="width: 100%; grid-column: 1/3;"/>
+      </div>
+        <h2 style="max-width: 40%; height: max-content; font-size: 78px; color: #00db7d; grid-row: 2/4">title compensation certificate</h2>
+        <p style="max-width: 80%; height: max-content; font-size: 26px; color: #fcfcfd; grid-row: 4/4">You have compensate <strong>543.12 t</strong> of <strong>CO2</strong> for this project from ClimateCoin.
             This certificate is official, created and validated by Climatecoin.
-         </p>
+        </p>
       </div>
       <div style="width: 100%; padding: 72px;">
          <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr  1fr; grid-template-rows: 1fr; gap: 36px;">
