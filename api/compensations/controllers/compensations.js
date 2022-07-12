@@ -42,6 +42,13 @@ async function calculate(ctx) {
     suggestedParams,
   })
 
+  const requiredFundsPaymentTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    from: creator.addr,
+    to: algosdk.getApplicationAddress(Number(process.env.APP_ID)),
+    amount: algosdk.algosToMicroalgos((2+assetsToCompensateFrom.length)*0.1),
+    suggestedParams: suggestedParams,
+  })
+
   const burnParametersTxn = algosdk.makeApplicationCallTxnFromObject({
     from: creator.addr,
     appIndex: Number(process.env.APP_ID),
@@ -66,12 +73,13 @@ async function calculate(ctx) {
 
   burnTxn.fee += (5 + (4*assetsToCompensateFrom.length))*algosdk.ALGORAND_MIN_TX_FEE
 
-  const burnGroupTxn = [climatecoinTransferTxn, burnParametersTxn, burnTxn]
-  const [transfer, params, burn] = algosdk.assignGroupID(burnGroupTxn)
+  const burnGroupTxn = [climatecoinTransferTxn, requiredFundsPaymentTxn, burnParametersTxn, burnTxn]
+  const [transfer, funds, params, burn] = algosdk.assignGroupID(burnGroupTxn)
 
   const encodedTransferTxn = algosdk.encodeUnsignedTransaction(transfer)
   const encodedBurnTxn = algosdk.encodeUnsignedTransaction(burn)
 
+  const signedFundsTxn = await funds.signTxn(creator.sk)
   const signedParamsTxn = await params.signTxn(creator.sk)
 
   return {
@@ -79,6 +87,7 @@ async function calculate(ctx) {
     assets: assetsToCompensateFrom,
     nftIds,
     signedParamsTxn,
+    signedFundsTxn,
     encodedTransferTxn,
     encodedBurnTxn,
   }
@@ -94,36 +103,36 @@ async function create(ctx) {
   const txnBlob = [
     Buffer.from(Object.values(signedTxn[0])),
     Buffer.from(signedTxn[1].data),
-    Buffer.from(Object.values(signedTxn[2])),
-    Buffer.from(signedTxn[3].data),
+    Buffer.from(signedTxn[2].data),
+    Buffer.from(Object.values(signedTxn[3])),
   ]
   const { txId } = await algodClient.sendRawTransaction(txnBlob).do()
-  const result = await algosdk.waitForConfirmation(algodClient, txId, 3)
+  const result = await algosdk.waitForConfirmation(algodClient, txId, 4)
 
-  const indexerClient = algoIndexer()
+  // const indexerClient = algoIndexer()
   const groupId = Buffer.from(result.txn.txn.grp).toString('base64')
-  const block = await indexerClient.lookupBlock(result['confirmed-round']).do()
+  // const block = await indexerClient.lookupBlock(result['confirmed-round']).do()
+  //
+  // const grpTxns = block.transactions.filter((transaction) => transaction?.group === groupId)
+  // const assetCreatorTxn = grpTxns.filter(
+  //   (transaction) =>
+  //     transaction.hasOwnProperty('inner-txns') && transaction['inner-txns'][0].hasOwnProperty('created-asset-index'),
+  // )
+  //
+  // const nftId = assetCreatorTxn[0]['inner-txns'][0]['created-asset-index']
+  //
+  // const nftDb = await strapi.services.nfts.create({
+  //   group_id: groupId,
+  //   last_config_txn: null,
+  //   nft_type: ALGORAND_ENUMS.NFT_TYPES.COMPENSATION_RECEIPT,
+  //   metadata: {},
+  //   asa_id: nftId,
+  //   asa_txn_id: assetCreatorTxn[0].id,
+  //   owner_address: user.publicAddress,
+  //   supply: 1,
+  // })
 
-  const grpTxns = block.transactions.filter((transaction) => transaction?.group === groupId)
-  const assetCreatorTxn = grpTxns.filter(
-    (transaction) =>
-      transaction.hasOwnProperty('inner-txns') && transaction['inner-txns'][0].hasOwnProperty('created-asset-index'),
-  )
-
-  const nftId = assetCreatorTxn[0]['inner-txns'][0]['created-asset-index']
-
-  const nftDb = await strapi.services.nfts.create({
-    group_id: groupId,
-    last_config_txn: null,
-    nft_type: ALGORAND_ENUMS.NFT_TYPES.COMPENSATION_RECEIPT,
-    metadata: {},
-    asa_id: nftId,
-    asa_txn_id: assetCreatorTxn[0].id,
-    owner_address: user.publicAddress,
-    supply: 1,
-  })
-
-  const newCompensation = { ...compensationData, txn_id: groupId, user: user.id, compensation_receipt_nft: nftDb.id }
+  const newCompensation = { ...compensationData, txn_id: groupId, user: user.id }
 
   const newDocument = await strapi.services.compensations.create(newCompensation)
   return sanitizeEntity(newDocument, { model: strapi.models.compensations })
