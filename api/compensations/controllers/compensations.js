@@ -65,26 +65,13 @@ async function calculate(ctx) {
 
   burnTxn.fee += (5 + (4*assetsToCompensateFrom.length))*algosdk.ALGORAND_MIN_TX_FEE
 
-  const mintReceiptTxn = algosdk.makeApplicationCallTxnFromObject({
-    from: creator.addr,
-    appIndex: Number(process.env.APP_ID),
-    // the atc appends the assets to the foreignAssets and passes the index of the asses in the appArgs
-    appArgs: [algorandUtils.getMethodByName('mint_unverified_compensation_nft').getSelector(), algosdk.encodeUint64(0)],
-    foreignApps: [Number(process.env.DUMP_APP_ID)],
-    onComplete: algosdk.OnApplicationComplete.NoOpOC,
-    suggestedParams,
-  })
-
-  mintReceiptTxn.fee += 4*algosdk.ALGORAND_MIN_TX_FEE
-
-  const burnGroupTxn = [climatecoinTransferTxn, burnParametersTxn, burnTxn, mintReceiptTxn]
-  const [transfer, params, burn, mint] = algosdk.assignGroupID(burnGroupTxn)
+  const burnGroupTxn = [climatecoinTransferTxn, burnParametersTxn, burnTxn]
+  const [transfer, params, burn] = algosdk.assignGroupID(burnGroupTxn)
 
   const encodedTransferTxn = algosdk.encodeUnsignedTransaction(transfer)
   const encodedBurnTxn = algosdk.encodeUnsignedTransaction(burn)
 
   const signedParamsTxn = await params.signTxn(creator.sk)
-  const signedMintTxn = await mint.signTxn(creator.sk)
 
   return {
     amount: Number(amount),
@@ -93,7 +80,6 @@ async function calculate(ctx) {
     signedParamsTxn,
     encodedTransferTxn,
     encodedBurnTxn,
-    signedMintTxn,
   }
 }
 
