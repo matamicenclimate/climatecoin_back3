@@ -57,8 +57,9 @@ async function calculate(ctx) {
     from: user.publicAddress,
     appIndex: Number(process.env.APP_ID),
     appArgs: [algorandUtils.getMethodByName('burn_climatecoins').getSelector()],
-    foreignAssets: assetsToCompensateFrom,
+    foreignAssets: [...assetsToCompensateFrom, Number(process.env.CLIMATECOIN_ASA_ID)],
     accounts: [algosdk.getApplicationAddress(Number(process.env.DUMP_APP_ID))],
+    foreignApps: [Number(process.env.DUMP_APP_ID)],
     onComplete: algosdk.OnApplicationComplete.NoOpOC,
     suggestedParams,
   })
