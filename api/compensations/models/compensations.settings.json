@@ -32,6 +32,7 @@
         "pending_notification",
         "pending_certificates",
         "received_certificates",
+        "rejected",
         "minted",
         "claimed"
       ],

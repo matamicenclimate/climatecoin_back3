@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "07/13/2022 3:52:42 PM"
+    "x-generation-date": "07/13/2022 4:18:24 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -13041,6 +13041,7 @@
               "pending_notification",
               "pending_certificates",
               "received_certificates",
+              "rejected",
               "minted",
               "claimed"
             ]
@@ -13280,6 +13281,7 @@
               "pending_notification",
               "pending_certificates",
               "received_certificates",
+              "rejected",
               "minted",
               "claimed"
             ]
