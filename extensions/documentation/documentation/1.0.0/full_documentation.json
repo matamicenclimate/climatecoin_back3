@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "07/13/2022 4:18:24 PM"
+    "x-generation-date": "07/13/2022 6:03:57 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -11820,8 +11820,7 @@
                 "enum": [
                   "fee",
                   "developer",
-                  "compensation",
-                  "compensation_receipt"
+                  "compensation"
                 ]
               },
               "asa_id": {
@@ -11831,7 +11830,7 @@
                 "type": "string"
               },
               "burnWillTimeoutOn": {
-                "type": "number"
+                "type": "integer"
               },
               "supply": {
                 "type": "integer"
@@ -12654,8 +12653,7 @@
                 "enum": [
                   "fee",
                   "developer",
-                  "compensation",
-                  "compensation_receipt"
+                  "compensation"
                 ]
               },
               "asa_id": {
@@ -12665,7 +12663,7 @@
                 "type": "string"
               },
               "burnWillTimeoutOn": {
-                "type": "number"
+                "type": "integer"
               },
               "supply": {
                 "type": "integer"
@@ -12716,8 +12714,7 @@
                 "enum": [
                   "fee",
                   "developer",
-                  "compensation",
-                  "compensation_receipt"
+                  "compensation"
                 ]
               },
               "asa_id": {
@@ -12727,7 +12724,7 @@
                 "type": "string"
               },
               "burnWillTimeoutOn": {
-                "type": "number"
+                "type": "integer"
               },
               "supply": {
                 "type": "integer"
@@ -12907,8 +12904,7 @@
                   "enum": [
                     "fee",
                     "developer",
-                    "compensation",
-                    "compensation_receipt"
+                    "compensation"
                   ]
                 },
                 "asa_id": {
@@ -12918,7 +12914,7 @@
                   "type": "string"
                 },
                 "burnWillTimeoutOn": {
-                  "type": "number"
+                  "type": "integer"
                 },
                 "supply": {
                   "type": "integer"
@@ -13209,8 +13205,7 @@
                 "enum": [
                   "fee",
                   "developer",
-                  "compensation",
-                  "compensation_receipt"
+                  "compensation"
                 ]
               },
               "asa_id": {
@@ -13220,7 +13215,7 @@
                 "type": "string"
               },
               "burnWillTimeoutOn": {
-                "type": "number"
+                "type": "integer"
               },
               "supply": {
                 "type": "integer"
@@ -13498,8 +13493,7 @@
             "enum": [
               "fee",
               "developer",
-              "compensation",
-              "compensation_receipt"
+              "compensation"
             ]
           },
           "asa_id": {
@@ -13509,7 +13503,7 @@
             "type": "string"
           },
           "burnWillTimeoutOn": {
-            "type": "number"
+            "type": "integer"
           },
           "supply": {
             "type": "integer"
@@ -13551,8 +13545,7 @@
             "enum": [
               "fee",
               "developer",
-              "compensation",
-              "compensation_receipt"
+              "compensation"
             ]
           },
           "asa_id": {
@@ -13562,7 +13555,7 @@
             "type": "string"
           },
           "burnWillTimeoutOn": {
-            "type": "number"
+            "type": "integer"
           },
           "supply": {
             "type": "integer"
