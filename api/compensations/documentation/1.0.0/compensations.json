@@ -1352,71 +1352,8 @@
           "burn_receipt": {
             "type": "object"
           },
-          "compensation_receipt_nft": {
-            "required": [
-              "id",
-              "status"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "group_id": {
-                "type": "string"
-              },
-              "asa_txn_id": {
-                "type": "string"
-              },
-              "metadata": {
-                "type": "object"
-              },
-              "last_config_txn": {
-                "type": "string"
-              },
-              "nft_type": {
-                "type": "string",
-                "enum": [
-                  "fee",
-                  "developer",
-                  "compensation",
-                  "compensation_receipt"
-                ]
-              },
-              "asa_id": {
-                "type": "integer"
-              },
-              "owner_address": {
-                "type": "string"
-              },
-              "burnWillTimeoutOn": {
-                "type": "number"
-              },
-              "supply": {
-                "type": "integer"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "created",
-                  "claimed",
-                  "swapped",
-                  "burned"
-                ]
-              },
-              "supply_remaining": {
-                "type": "integer"
-              },
-              "created_by": {
-                "type": "string"
-              },
-              "updated_by": {
-                "type": "string"
-              }
-            }
-          },
-          "receipt_claimed": {
-            "type": "boolean",
-            "default": false
+          "contract_id": {
+            "type": "integer"
           }
         }
       },
@@ -1458,12 +1395,8 @@
           "burn_receipt": {
             "type": "object"
           },
-          "compensation_receipt_nft": {
-            "type": "string"
-          },
-          "receipt_claimed": {
-            "type": "boolean",
-            "default": false
+          "contract_id": {
+            "type": "integer"
           },
           "created_by": {
             "type": "string"

@@ -11,6 +11,7 @@ const { createPDF, generateCompensationPDF } = require('../../../utils/pdf')
 const { uploadFileToIPFS } = require('../../../utils/ipfs')
 const { parseMultipartData, sanitizeEntity } = require('strapi-utils')
 const { algoIndexer } = require('../../../config/algorand')
+const {burn} = require("../../nfts/controllers/nfts");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
  * to customize this controller
@@ -109,30 +110,19 @@ async function create(ctx) {
   const { txId } = await algodClient.sendRawTransaction(txnBlob).do()
   const result = await algosdk.waitForConfirmation(algodClient, txId, 4)
 
-  // const indexerClient = algoIndexer()
+  const indexerClient = algoIndexer()
   const groupId = Buffer.from(result.txn.txn.grp).toString('base64')
-  // const block = await indexerClient.lookupBlock(result['confirmed-round']).do()
-  //
-  // const grpTxns = block.transactions.filter((transaction) => transaction?.group === groupId)
-  // const assetCreatorTxn = grpTxns.filter(
-  //   (transaction) =>
-  //     transaction.hasOwnProperty('inner-txns') && transaction['inner-txns'][0].hasOwnProperty('created-asset-index'),
-  // )
-  //
-  // const nftId = assetCreatorTxn[0]['inner-txns'][0]['created-asset-index']
-  //
-  // const nftDb = await strapi.services.nfts.create({
-  //   group_id: groupId,
-  //   last_config_txn: null,
-  //   nft_type: ALGORAND_ENUMS.NFT_TYPES.COMPENSATION_RECEIPT,
-  //   metadata: {},
-  //   asa_id: nftId,
-  //   asa_txn_id: assetCreatorTxn[0].id,
-  //   owner_address: user.publicAddress,
-  //   supply: 1,
-  // })
+  const block = await indexerClient.lookupBlock(result['confirmed-round']).do()
 
-  const newCompensation = { ...compensationData, txn_id: groupId, user: user.id }
+  const grpTxns = block.transactions.filter((transaction) => transaction?.group === groupId)
+  const appCreatorTxn = grpTxns.filter(
+    (transaction) =>
+      transaction.hasOwnProperty('inner-txns') && transaction['inner-txns'][0].hasOwnProperty('created-application-index'),
+  )
+
+  const burnContractId = appCreatorTxn[0]['inner-txns'][0]['created-application-index']
+
+  const newCompensation = { ...compensationData, txn_id: groupId, user: user.id, contract_id: burnContractId }
 
   const newDocument = await strapi.services.compensations.create(newCompensation)
   return sanitizeEntity(newDocument, { model: strapi.models.compensations })

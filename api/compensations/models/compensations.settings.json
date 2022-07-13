@@ -67,12 +67,8 @@
     "burn_receipt": {
       "type": "json"
     },
-    "compensation_receipt_nft": {
-      "model": "nfts"
-    },
-    "receipt_claimed": {
-      "type": "boolean",
-      "default": false
+    "contract_id": {
+      "type": "integer"
     }
   }
 }
