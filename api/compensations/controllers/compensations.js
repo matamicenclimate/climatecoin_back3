@@ -315,7 +315,7 @@ async function getNFTsToBurn(amount) {
   // TODO Use indexer to has updated fields
   const carbonDocuments = await strapi.services['carbon-documents'].find({
     status: 'swapped',
-    _sort: 'credit_start:desc',
+    _sort: 'credit_start:asc',
     // swapped status means that the are ready to be used for burning and they have supply remaining
     'developer_nft.status': 'swapped',
   })
