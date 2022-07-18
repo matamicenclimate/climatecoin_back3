@@ -26,7 +26,10 @@ async function calculate(ctx) {
     throw new Error('There are no nfts to burn')
   }
   for (const nftBurning of nftsToBurn) {
-    await strapi.services.nfts.update({ id: nftBurning.id }, { burnWillTimeoutOn: Date.now() + (60000 * process.env.MAX_MINUTES_TO_BURN) })
+    await strapi.services.nfts.update(
+      { id: nftBurning.id },
+      { burnWillTimeoutOn: Date.now() + 60000 * process.env.MAX_MINUTES_TO_BURN },
+    )
   }
   const algodclient = algoClient()
   const creator = algosdk.mnemonicToSecretKey(process.env.ALGO_MNEMONIC)
@@ -226,7 +229,7 @@ async function mint(ctx) {
 
   try {
     const filePath = `${compensation.id}.pdf`
-    const html = generateCompensationPDF(compensation.txn_id, ipfsCIDs, compensation.nfts, compensation.burn_receipt)
+    const html = generateCompensationPDF(ipfsCIDs, compensation)
     const consolidationPdfBuffer = await createPDF(html, filePath)
 
     // const pdfBuffer = await readFileFromUploads(filePath)
@@ -329,7 +332,7 @@ async function getNFTsToBurn(amount) {
       nftsToBurn.push(nft)
     }
   })
-  if (amount > totalAmountBurned) throw new Error("Not enough NFTs to burn")
+  if (amount > totalAmountBurned) throw new Error('Not enough NFTs to burn')
   return nftsToBurn
 }
 
