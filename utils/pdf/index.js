@@ -104,7 +104,7 @@ const generateCompensationPDF = (ipfsCids, compensation) => {
               <p style="color: #b1b5c3; margin:0px 0px 5px 0px">#${nft.id}</p>
             </div>
           </div>
-          <hr style="width: 100%; margin-top:15px"/>
+          <hr style="width: 100%; margin-top:30px"/>
           <h1 style="max-width: 50%; height: min-content; font-size: 52px; color: #00db7d;">
             ${title(nft)} compensation certificate
           </h1>
@@ -116,9 +116,9 @@ const generateCompensationPDF = (ipfsCids, compensation) => {
             This certificate is official, created and validated by Climatecoin.
           </p>
         </div>
-        <div style="width: 100%; padding: 60px;">
+        <div style="width: 100%; padding: 50px;">
           <div style="width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 1fr; gap: 36px;">
-            <dl style="grid-column: 1 / 4; grid-row: 1 ; border: 1px #e6e8ec solid; border-radius: 15px; padding: 20px; margin:0px; font-size:9px">
+            <dl style="grid-column: 1 / 4; grid-row: 1 ; border: 1px #e6e8ec solid; border-radius: 8px; padding: 16px; margin:0px; font-size:9px;   gap: 10.7px;">
               <dt style="margin-bottom: 5px; line-height: 1.71; text-align: left; color: #777e90;">
                 Project
               </dt>
@@ -147,7 +147,7 @@ const generateCompensationPDF = (ipfsCids, compensation) => {
                 </div>
               </div>
               <hr />
-              <div style=" display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 1fr">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 1fr">
                 <div>
                   <dt style="margin-bottom:5px; line-height: 1.71; text-align: left; color: #777e90;">
                     ID project
@@ -184,7 +184,7 @@ const generateCompensationPDF = (ipfsCids, compensation) => {
               </div>
             </dl>
           </div>
-          <div style="width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 50px;">
+          <div style="width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 57px;">
             <div>
               <img src="${Sign}" alt="Signed document" style="width: 205px;"/>
             </div>
