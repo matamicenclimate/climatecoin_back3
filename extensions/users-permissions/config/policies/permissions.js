@@ -69,22 +69,10 @@ module.exports = async (ctx, next) => {
     const pushFilesResponse = await fileUploader.pushFile(ctx)
     ctx.request.body = { ...ctx.request.body, ...pushFilesResponse }
   }
-  console.log('..............user autheticated', ctx.state.user)
-  if (ctx.state.user) {
-    // request is already authenticated in a different way
-    return next()
-  }
 
   if (ctx.request && ctx.request.header && ctx.request.header.authorization) {
     try {
-      const { id } = await strapi.plugins['users-permissions'].services.jwt.getToken(ctx)
-
-      if (id === undefined) {
-        throw new Error('Invalid token: Token did not contain required fields')
-      }
-
-      // fetch authenticated user
-      ctx.state.user = await strapi.plugins['users-permissions'].services.user.fetchAuthenticatedUser(id)
+      if (!ctx.state.user) ctx.state.user = await strapi.plugins['users-permissions'].services.user.fetchAuthenticatedUser(id)
     } catch (err) {
       return handleErrors(ctx, err, 'unauthorized')
     }
@@ -92,11 +80,18 @@ module.exports = async (ctx, next) => {
     if (!ctx.state.user) {
       return handleErrors(ctx, 'User Not Found', 'unauthorized')
     }
-    console.log('........user role', role)
-    role = ctx.state.user.role
-    if (role.type === 'root') {
-      console.log('........user role root authenticated', role)
+
+    //TODO: Ver type del rol del usuario de frontend
+    if (ctx.state.user.roles) {
+      role = ctx.state.user.roles[0]
+      if (role.code === 'strapi-super-admin') {
+        return await next()
+      }
+    }else if (ctx.state.user.role && ctx.state.user.role.type === "root"){
+      // TODO: Quitar el root de aqui, malas prácticas..
       return await next()
+    }else {
+      role = ctx.state.user.role
     }
 
     const store = await strapi.store({
@@ -116,9 +111,7 @@ module.exports = async (ctx, next) => {
 
   // Retrieve `public` role.
   if (!role) {
-    console.log('........user has no role', role)
     role = await strapi.query('role', 'users-permissions').findOne({ type: 'public' }, [])
-    console.log('........user has get role public', role)
   }
 
   const route = ctx.request.route
@@ -135,20 +128,15 @@ module.exports = async (ctx, next) => {
   // if (process.env.NODE_ENV === 'test') {
   //   return await next()
   // }
-  console.log('........user permission', permission)
   if (!permission) {
-    console.log('........user has not permission error')
     return handleErrors(ctx, undefined, 'forbidden')
   }
 
   // Execute the policies.
   if (permission.policy) {
-    console.log('........user permission policy', permission.policy)
-    console.log('........user permission policy return', await strapi.plugins['users-permissions'].config.policies[permission.policy](ctx, next))
     return await strapi.plugins['users-permissions'].config.policies[permission.policy](ctx, next)
   }
 
-  console.log('Authenticated por mis huevismo......')
   // Execute the action.
   await next()
 }
