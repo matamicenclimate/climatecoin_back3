@@ -32,7 +32,7 @@ module.exports = {
           newNFT[key] = vaultHoldings.amount
           continue
         }
-        newNFT[key] = oldNft[key]
+        delete newNFT[key]
       }
     }
   },
