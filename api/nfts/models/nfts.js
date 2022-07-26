@@ -20,6 +20,7 @@ module.exports = {
       const { _id } = params
       const oldNft = await strapi.services.nfts.findOne({ _id })
       if (oldNft.id !== _id) throw new Error(`NFT not found with id: ${_id}`)
+      // Only allow to update the status, the time of burn and supply_remaining (according to indexer)
       for (const key of Object.keys(newNFT)) {
         if (["status", "burnWillTimeoutOn"].includes(key)) continue;
         if (key === "supply_remaining") {
