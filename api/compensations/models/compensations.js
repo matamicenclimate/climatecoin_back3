@@ -52,6 +52,15 @@ module.exports = {
           await rejectCompensation(oldCompensation)
         }else if (oldCompensation.state === "rejected") throw strapi.errors.badRequest(`Cannot edit compensation that has already been rejected`)
       }
+
+      for (const key of Object.keys(newCompensation)) {
+        if (key === "state") continue;
+        if (key === "burn_receipt" && !oldCompensation[key]) continue;
+        if (["compensation_nft", "consolidation_certificate_ipfs_cid"].includes(key) && !oldCompensation[key] && newCompensation.state === "minted") continue;
+        if (key === "registry_certificates" && !["minted", "claimed", "rejected"].includes(oldCompensation.state)) continue;
+
+        delete newCompensation[key]
+      }
     },
     afterCreate: async function (result) {
       await strapi.services.activities.create({
