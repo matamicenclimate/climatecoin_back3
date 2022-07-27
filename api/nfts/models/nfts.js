@@ -20,9 +20,10 @@ module.exports = {
       const { _id } = params
       const oldNft = await strapi.services.nfts.findOne({ _id })
       if (oldNft.id !== _id) throw new Error(`NFT not found with id: ${_id}`)
-      // Only allow to update the status, the time of burn and supply_remaining (according to indexer)
       for (const key of Object.keys(newNFT)) {
+        // Allow changes to status and burnWillTimeoutOn
         if (["status", "burnWillTimeoutOn"].includes(key)) continue;
+        // If the supply_remaining is updated, check if the change is correct in the blockchain
         if (key === "supply_remaining") {
           const indexerClient = algoIndexer()
           const NFTHoldings = await indexerClient.lookupAssetBalances(Number(oldNft.asa_id)).do()
@@ -32,6 +33,7 @@ module.exports = {
           newNFT[key] = vaultHoldings.amount
           continue
         }
+        // Deny any other change
         delete newNFT[key]
       }
     }

@@ -54,11 +54,16 @@ module.exports = {
       }
 
       for (const key of Object.keys(newCompensation)) {
+        // Allow changes to state
         if (key === "state") continue;
+        // Allow setting the burn_receipt only once
         if (key === "burn_receipt" && !oldCompensation[key]) continue;
+        // Allow setting the compensation nft and certificate cid only once during the mint
         if (["compensation_nft", "consolidation_certificate_ipfs_cid"].includes(key) && !oldCompensation[key] && newCompensation.state === "minted") continue;
+        // Allow changes to the registry_certificate unless the state is minted, claimed or rejected
         if (key === "registry_certificates" && !["minted", "claimed", "rejected"].includes(oldCompensation.state)) continue;
 
+        // Do not allow any other change
         delete newCompensation[key]
       }
     },

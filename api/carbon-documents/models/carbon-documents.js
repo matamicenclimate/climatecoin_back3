@@ -49,10 +49,12 @@ module.exports = {
 
       // Only allow to update the status and the developer and fee nfts internally
       for (const key of Object.keys(newDocument)) {
+        // Allow changes to status
         if (key === "status") continue;
+        // Allow setting the developer and fee nft only once
         if (["developer_nft", "fee_nft"].includes(key) && oldCarbonDocument[key] === null) continue;
 
-        // Allow to update if state is pending or accepted
+        // Allow changes if state is pending or accepted, otherwise deny any change
         if (!["pending", "accepted"].includes(oldCarbonDocument.status)) delete newDocument[key]
       }
 
