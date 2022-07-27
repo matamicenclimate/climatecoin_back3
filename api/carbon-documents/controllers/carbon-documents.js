@@ -49,6 +49,8 @@ async function create(ctx) {
   }
 
   const url = `${process.env.BASE_URL}${process.env.CONTENT_MANAGER_URL}/${applicationUid}/${createdDocument.id}`
+  const title = `${createdDocument.title.slice(0, 10)}`
+  const credits = `${createdDocument.credits}`
   // const mailContent = `User ${ctx.state.user.email} sent a new document.<br>Available here: ${url}`
   const mailContent = `       
       <html
@@ -556,7 +558,7 @@ async function create(ctx) {
                                                                      class="mcnTextClaim"
                                                                      >
                                                                      <span
-                                                                        >Your project {name} to offset 5,657 t of CO2 has been
+                                                                        >Your project ${title} to offset ${credits} t of CO2 has been
                                                                      confirmed in Climatecoin.</span
                                                                         >
                                                                   </td>
@@ -609,7 +611,7 @@ async function create(ctx) {
                                                                class="mcnTextContent"
                                                                style="color: #777e90;"
                                                                >
-                                                               Congratulations. Your project {name} has been approved for listing
+                                                               Congratulations. Your project $${title} has been approved for listing
                                                                on Climatecoin now you can share it with your friends so they can
                                                                start offsetting their carbon footprint.
                                                             </td>
@@ -657,7 +659,7 @@ async function create(ctx) {
                                                       <a
                                                          class="mcnButton"
                                                          title="View project"
-                                                         href=""
+                                                         href="${url}"
                                                          target="_blank"   
                                                          style="color: #777E90;"
                                                          >View project</a
@@ -701,7 +703,7 @@ async function create(ctx) {
                                                       <a
                                                          class="mcnButton"
                                                          title="Share project"
-                                                         href="https://climatetrade.com/es/inicio/?gclid=Cj0KCQjwof6WBhD4ARIsAOi65ag-D6KGcI3Sajrb_gpX16QNX2dZcDH5TfuTcCB5hbY3dQLcDwQ4Y8YaAmZuEALw_wcB"
+                                                         href="${url}"
                                                          target="_blank"
                                                          style="color: #FCFCFD;"
                                                          >Share project</a
