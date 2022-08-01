@@ -72,9 +72,24 @@ module.exports = async (ctx, next) => {
 
   if (ctx.request && ctx.request.header && ctx.request.header.authorization) {
     try {
-      if (!ctx.state.user) ctx.state.user = await strapi.plugins['users-permissions'].services.user.fetchAuthenticatedUser(id)
+      if (!ctx.state.user) {
+        const { id } = await strapi.plugins['users-permissions'].services.jwt.getToken(ctx);
+
+        if (id === undefined) {
+          throw new Error('Invalid token: Token did not contain required fields');
+        }
+
+        // fetch authenticated user
+        ctx.state.user = await strapi.plugins[
+          'users-permissions'
+          ].services.user.fetchAuthenticatedUser(id);
+      }
     } catch (err) {
-      return handleErrors(ctx, err, 'unauthorized')
+      try{
+        await strapi.plugins['magic'].services['magic'].loginWithMagic(ctx)
+      } catch (err) {
+        return handleErrors(ctx, err, 'unauthorized');
+      }
     }
 
     if (!ctx.state.user) {

@@ -1188,7 +1188,6 @@
         "required": [
           "id",
           "username",
-          "email",
           "type"
         ],
         "properties": {
@@ -1374,7 +1373,6 @@
       "NewUsersPermissionsUser": {
         "required": [
           "username",
-          "email",
           "type"
         ],
         "properties": {
