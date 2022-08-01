@@ -132,10 +132,10 @@ module.exports = {
       const applicationUid = strapi.api[collectionName].models[collectionName].uid
       const url = `${process.env.BASE_URL}${process.env.CONTENT_MANAGER_URL}/${applicationUid}/${result.id}`
       const amount = result.amount
-      const certificate = result.data.consolidation_certificate_ipfs_cid
+      const certificate = result.consolidation_certificate_ipfs_cid
       const ipfsURL = 'https://cloudflare-ipfs.com/ipfs/'
       const explorerURL = 'https://testnet.algoexplorer.io/'
-      const txnGroupId = encodeURIComponent(result.data?.txn_id)
+      const txnGroupId = encodeURIComponent(result.txn_id)
 
       const mailContent = `
       <html
