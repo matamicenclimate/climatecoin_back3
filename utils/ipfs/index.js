@@ -1,4 +1,4 @@
-const IpfsStorage = require('./IpfsStorage')
+const IpfsStorage = require('./IpfsPinataStorage')
 
 /***
  *
