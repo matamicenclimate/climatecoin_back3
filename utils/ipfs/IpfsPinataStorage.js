@@ -4,8 +4,8 @@ const { Readable } = require('stream')
 class IpfsPinataStorage {
   constructor() {
     try {
-      const apiKey = process.env.PINATA_KEY
-      const apiSecret = process.env.PINATA_SECRET
+      const apiKey = process.env.PINATA_API_KEY
+      const apiSecret = process.env.PINATA_API_SECRET
       this.storage = pinataSDK(apiKey, apiSecret)
     } catch (error) {
       const message = `Instanciate 'IpfsPinataStorage' class error: ${error.message}`
@@ -15,8 +15,8 @@ class IpfsPinataStorage {
 
   prepare(file, mime) {
     try {
-      this.readableStreamForFile = Readable.from(file.buffer)
-      this.readableStreamForFile.path = file.originalname
+      this.readableStreamForFile = Readable.from(file)
+      this.readableStreamForFile.path = "prueba"//file.originalname
       this.options = this.options = {
         pinataMetadata: {
           ...mime,
