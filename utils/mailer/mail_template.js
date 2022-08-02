@@ -1,11 +1,4 @@
-var Module = require('module')
-var fs = require('fs')
-
-Module._extensions['.png'] = function (module, fn) {
-  var base64 = fs.readFileSync(fn).toString('base64')
-  module._compile('module.exports="data:Logo/jpg;base64,' + base64 + '"', fn)
-}
-var Logo = require('../../admin/src/assets/images/logo-light.png')
+const { Logo } = require('../pdf/index') 
 
 const getButton = (button, color) => {
   if (button !== undefined) {
