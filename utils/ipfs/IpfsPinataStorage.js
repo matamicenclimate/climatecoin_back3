@@ -19,7 +19,6 @@ class IpfsPinataStorage {
       this.readableStreamForFile.path = name
       this.options = this.options = {
         pinataMetadata: {
-          mime,
           name
         },
         pinataOptions: { cidVersion: 0 },
