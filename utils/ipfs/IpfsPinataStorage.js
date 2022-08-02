@@ -20,6 +20,7 @@ class IpfsPinataStorage {
       this.options = this.options = {
         pinataMetadata: {
           ...mime,
+          name: "prueba"
         },
         pinataOptions: { cidVersion: 0 },
       }
