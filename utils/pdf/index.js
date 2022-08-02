@@ -1,8 +1,8 @@
-const puppeteer = require('puppeteer')
-const path = require('path')
 var fs = require('fs')
+const path = require('path')
+const puppeteer = require('puppeteer')
 
-function readPng(file) {
+function readPng(file){
   return `data:image/png;base64,${fs.readFileSync(path.join(__dirname, file)).toString('base64')}`
 }
 
@@ -205,5 +205,5 @@ const generateCompensationPDF = (ipfsCids, compensation) => {
 module.exports = {
   createPDF,
   generateCompensationPDF,
-  Logo,
+  Logo
 }
