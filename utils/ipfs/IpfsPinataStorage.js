@@ -13,14 +13,14 @@ class IpfsPinataStorage {
     }
   }
 
-  prepare(file, mime) {
+  prepare(file, mime, name) {
     try {
       this.readableStreamForFile = Readable.from(file)
-      this.readableStreamForFile.path = "prueba"//file.originalname
+      this.readableStreamForFile.path = name
       this.options = this.options = {
         pinataMetadata: {
-          ...mime,
-          name: "prueba"
+          mime,
+          name
         },
         pinataOptions: { cidVersion: 0 },
       }
@@ -36,8 +36,7 @@ class IpfsPinataStorage {
         this.readableStreamForFile,
         this.options
       )
-      console.log('....', result)
-      return result
+      return result.IpfsHash
     } catch (error) {
       const message = `Calling store of 'IpfsPinataStorage' error: ${error}`
       throw new Error(message)
