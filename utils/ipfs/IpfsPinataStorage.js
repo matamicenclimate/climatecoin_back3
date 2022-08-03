@@ -17,9 +17,9 @@ class IpfsPinataStorage {
     try {
       this.readableStreamForFile = Readable.from(file)
       this.readableStreamForFile.path = name
-      this.options = this.options = {
+      this.options = {
         pinataMetadata: {
-          name
+          name,
         },
         pinataOptions: { cidVersion: 0 },
       }
@@ -31,10 +31,7 @@ class IpfsPinataStorage {
 
   async store() {
     try {
-      const result = await this.storage.pinFileToIPFS(
-        this.readableStreamForFile,
-        this.options
-      )
+      const result = await this.storage.pinFileToIPFS(this.readableStreamForFile, this.options)
       return result.IpfsHash
     } catch (error) {
       const message = `Calling store of 'IpfsPinataStorage' error: ${error}`
