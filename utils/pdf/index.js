@@ -1,21 +1,23 @@
-const puppeteer = require('puppeteer')
-const path = require('path')
 var fs = require('fs')
+const path = require('path')
+const puppeteer = require('puppeteer')
 
-function readPng(file){
+function readPng(file) {
   return `data:image/png;base64,${fs.readFileSync(path.join(__dirname, file)).toString('base64')}`
 }
 
 var Logo = readPng('./assets/logo-light.png')
 var Sign = readPng('./assets/sign.png')
 
-
 async function createPDF(html, filePath) {
   // launch a new chrome instance
-  const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',
-    args: ['--no-sandbox'],
-  })
+  const puppeteerParams = { args: ['--no-sandbox'] }
+  // TODO: Detectar aqui si estamos en producción...
+  if (process.env.BASE_URL.includes('staging')) {
+    puppeteerParams.executablePath = '/usr/bin/chromium-browser'
+  }
+
+  const browser = await puppeteer.launch(puppeteerParams)
 
   // create a new page
   const page = await browser.newPage()

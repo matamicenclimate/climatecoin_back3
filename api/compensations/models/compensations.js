@@ -85,7 +85,7 @@ module.exports = {
         const amount = result.amount
         const certificate = result.consolidation_certificate_ipfs_cid
         const explorerURL = 'https://testnet.algoexplorer.io/'
-        const txnGroupId = encodeURIComponent(data.txn_id)
+        const txnGroupId = encodeURIComponent(result.txn_id)
         if (result.state === 'minted') {
           const mailContent_confirmed = {
             title: 'Compensation confirmed.',
@@ -101,7 +101,7 @@ module.exports = {
           const confirmedMail = mailer.generateMailHtml(mailContent_confirmed)
           await mailer.send('Compensation confirmed', confirmedMail, user.email)
         } else if (result.state === 'rejected') {
-          const mailContent_confirmed = {
+          const mailContent_rejected = {
             title: 'Compensation rejected.',
             claim: `Your compensation request has been rejected.`,
             text: `<strong>${amount}</strong> ClimateCoins were returned to your Algorand account.`,
@@ -111,8 +111,8 @@ module.exports = {
             },
           }
 
-          const confirmedMail = mailer.generateMailHtml(mailContent_confirmed)
-          await mailer.send('Compensation rejected', confirmedMail, user.email)
+          const rejectedMail = mailer.generateMailHtml(mailContent_rejected)
+          await mailer.send('Compensation rejected', rejectedMail, user.email)
         }
 
         await strapi.services.notifications.create({
