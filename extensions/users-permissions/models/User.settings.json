@@ -74,7 +74,7 @@
     },
     "publicAddress": {
       "type": "string",
-      "private": true
+      "private": false
     },
     "avatar": {
       "model": "file",

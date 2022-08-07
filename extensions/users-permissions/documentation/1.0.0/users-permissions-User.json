@@ -1259,6 +1259,9 @@
               "developer"
             ]
           },
+          "publicAddress": {
+            "type": "string"
+          },
           "avatar": {
             "required": [
               "id",
