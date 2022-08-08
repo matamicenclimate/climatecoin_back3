@@ -18,6 +18,14 @@
     },
     {
       "method": "GET",
+      "path": "/compensations/list",
+      "handler": "compensations.list",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/compensations/calculate",
       "handler": "compensations.calculate",
       "config": {
