@@ -1,27 +1,23 @@
-var Module = require('module')
 var fs = require('fs')
-
-Module._extensions['.png'] = function (module, fn) {
-  var base64 = fs.readFileSync(fn).toString('base64')
-  module._compile('module.exports="data:Logo/jpg;base64,' + base64 + '"', fn)
-}
-var Logo = require('./assets/logo-light.png')
-
-Module._extensions['.png'] = function (module, fn) {
-  var base64 = fs.readFileSync(fn).toString('base64')
-  module._compile('module.exports="data:Sign/jpg;base64,' + base64 + '"', fn)
-}
-var Sign = require('./assets/sign.png')
-
-const puppeteer = require('puppeteer')
 const path = require('path')
+const puppeteer = require('puppeteer')
+
+function readPng(file) {
+  return `data:image/png;base64,${fs.readFileSync(path.join(__dirname, file)).toString('base64')}`
+}
+
+var Logo = readPng('./assets/logo-light.png')
+var Sign = readPng('./assets/sign.png')
 
 async function createPDF(html, filePath) {
   // launch a new chrome instance
-  const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',
-    args: ['--no-sandbox'],
-  })
+  const puppeteerParams = { args: ['--no-sandbox'] }
+  // TODO: Detectar aqui si estamos en producción...
+  if (process.env.BASE_URL.includes('staging')) {
+    puppeteerParams.executablePath = '/usr/bin/chromium-browser'
+  }
+
+  const browser = await puppeteer.launch(puppeteerParams)
 
   // create a new page
   const page = await browser.newPage()
@@ -210,4 +206,5 @@ const generateCompensationPDF = (ipfsCids, compensation) => {
 module.exports = {
   createPDF,
   generateCompensationPDF,
+  Logo,
 }
