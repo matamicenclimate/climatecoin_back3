@@ -43,6 +43,8 @@ async function find(ctx) {
 }
 
 async function create(ctx) {
+  if (!ctx.state.user) return ctx.unauthorized()
+
   const collectionName = ctx.originalUrl.substring(1)
   const applicationUid = strapi.api[collectionName].models[collectionName].uid
   const pushFilesResponse = await fileUploader.pushFile(ctx)
@@ -54,6 +56,7 @@ async function create(ctx) {
   )
 
   ctx.request.body = formatBodyArrays(collectionTypeAtts, ctx.request.body)
+  ctx.request.body.user = ctx.state.user.id
   const createdDocument = await strapi.services[collectionName].create(ctx.request.body)
   if (process.env.NODE_ENV === 'test') {
     return createdDocument
