@@ -61,7 +61,7 @@
     "issuer": {
       "type": "string",
       "configurable": false,
-      "private": true
+      "private": false
     },
     "type": {
       "type": "enumeration",

@@ -1251,6 +1251,9 @@
               }
             }
           },
+          "issuer": {
+            "type": "string"
+          },
           "type": {
             "type": "string",
             "default": "buyer",
