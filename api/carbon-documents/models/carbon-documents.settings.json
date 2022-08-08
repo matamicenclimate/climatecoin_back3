@@ -92,10 +92,6 @@
       "default": "pending",
       "required": false
     },
-    "created_by_user": {
-      "type": "email",
-      "required": true
-    },
     "pdd": {
       "model": "file",
       "via": "related",
@@ -171,6 +167,10 @@
     },
     "fee_nft": {
       "model": "nfts"
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user"
     }
   }
 }

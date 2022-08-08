@@ -67,7 +67,7 @@ module.exports = {
     afterUpdate: async function (result, params, data) {
       const statuses = getStatuses()
       if (data.oldStatus !== result.status) {
-        const userEmail = result.created_by_user
+        const userEmail = result.user?.email
         if (result.status === statuses.ACCEPTED) {
           const title = `${result.title.slice(0, 10)}`
           const credits = `${result.credits}`
@@ -104,20 +104,17 @@ module.exports = {
           mailer.logMailAction('carbon-documents', statuses.COMPLETED, mailer.MAIL_ACTIONS.SENT, userEmail)
         }
 
-        const userDb = await strapi.plugins['users-permissions'].services.user.fetch({
-          email: result.created_by_user,
-        })
         await strapi.services.notifications.create({
           title: `Carbon document ${result.status}`,
           description: `Carbon document status changed to ${result.status}`,
           model: 'carbon-documents',
           model_id: result.id,
-          user: userDb.id,
+          user: result.user.id,
         })
 
         // Add activity when carbon document status is "swapped"
         if (result.status === 'swapped') {
-          await strapi.services.activities.add(userDb, result.developer_nft)
+          await strapi.services.activities.add(result.user, result.developer_nft)
         }
       }
     },
