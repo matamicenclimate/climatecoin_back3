@@ -356,7 +356,7 @@ async function uploadFilesToIPFS(compensation) {
       const ipfsCIDs = []
       for (const nft of compensation.nfts) {
         const file = await getFileFromS3(nft.registry_certificate[0].url)
-        const result = await uploadFileToIPFS(file, nft.registry_certificate[0].mime)
+        const result = await uploadFileToIPFS(file, nft.registry_certificate[0].mime, nft.id)
         await strapi.services['nfts'].update(
           { id: nft.id },
           {
