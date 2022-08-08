@@ -31,7 +31,6 @@ module.exports = {
       for (const key of changeListKeys) {
         const isPublicAddressChange = key === 'publicAddress'
         const isUsernameChange = key === 'username'
-        const isEmailChange = key === 'email'
 
         if (isPublicAddressChange && newUser.publicAddress && oldUser.publicAddress !== newUser.publicAddress) {
           const indexerClient = algoIndexer()
@@ -44,7 +43,7 @@ module.exports = {
           }
           continue
         }
-        if (isEmailChange || isUsernameChange) delete newUser[key]
+        if (isUsernameChange) delete newUser[key]
       }
     },
   },
