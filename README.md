@@ -46,7 +46,7 @@ Under Settings > USERS & PERMISSIONS PLUGIN > Roles > Authenticated you need to 
     * create
     * me
     * prepareclaimcertificate
-    * list
+    * paginated
   * CURRENCY
     * find
   * INFO
