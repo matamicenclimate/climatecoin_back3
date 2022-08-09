@@ -18,8 +18,8 @@
     },
     {
       "method": "GET",
-      "path": "/compensations/list",
-      "handler": "compensations.list",
+      "path": "/compensations/paginated",
+      "handler": "compensations.paginated",
       "config": {
         "policies": []
       }

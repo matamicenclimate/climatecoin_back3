@@ -311,7 +311,7 @@
         "parameters": []
       }
     },
-    "/compensations/list": {
+    "/compensations/paginated": {
       "get": {
         "deprecated": false,
         "description": "",

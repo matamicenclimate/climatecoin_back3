@@ -227,7 +227,7 @@ async function me(ctx) {
   return activities
 }
 
-async function list(ctx) {
+async function paginated(ctx) {
   const user = ctx.state.user
   const totalCountReq = strapi.services.compensations.count({ user: user.id, ...ctx.query })
   const compensationsReq = strapi.services.compensations.find({ user: user.id, ...ctx.query })
@@ -330,7 +330,7 @@ const algoFn = {
 }
 module.exports = {
   me,
-  list,
+  paginated,
   calculate,
   mint,
   algoFn,
