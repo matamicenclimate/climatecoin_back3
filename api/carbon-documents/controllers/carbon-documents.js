@@ -386,7 +386,11 @@ async function swap(ctx) {
   for (const stxn of signedTxnsObject) {
     if (carbonDocument.swap_group_txn_id !== stxn.group.toString('base64'))
       return ctx.badRequest('Transactions manipulated')
+    stxn.group = undefined
   }
+
+  const computedGroupID = algosdk.computeGroupID(signedTxnsObject).toString('base64')
+  if (carbonDocument.swap_group_txn_id !== computedGroupID) return ctx.badRequest('Transactions manipulated')
 
   const { txId } = await algodClient.sendRawTransaction(txnBlob).do()
   const result = await algosdk.waitForConfirmation(algodClient, txId, 3)
