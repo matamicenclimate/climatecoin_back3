@@ -93,34 +93,56 @@ async function calculate(ctx) {
 
   const encodedTransferTxn = algosdk.encodeUnsignedTransaction(transfer)
   const encodedBurnTxn = algosdk.encodeUnsignedTransaction(burn)
+  const encodedFundsTxn = algosdk.encodeUnsignedTransaction(funds)
+  const encodedParamsTxn = algosdk.encodeUnsignedTransaction(params)
 
-  const signedFundsTxn = await funds.signTxn(creator.sk)
-  const signedParamsTxn = await params.signTxn(creator.sk)
+  // const groupID = burn.group.toString('base64')
+  const txnbuffer = Buffer.concat([encodedTransferTxn, encodedFundsTxn, encodedParamsTxn, encodedBurnTxn])
+  const signature = algosdk.signBytes(txnbuffer, creator.sk)
 
   return {
     amount: Number(amount),
     assets: assetsToCompensateFrom,
     nftIds,
-    signedParamsTxn,
-    signedFundsTxn,
     encodedTransferTxn,
+    encodedFundsTxn,
+    encodedParamsTxn,
     encodedBurnTxn,
+    signature,
   }
 }
 
 async function create(ctx) {
-  const { signedTxn, ...compensationData } = ctx.request.body
+  const { signedTxn, signature, ...compensationData } = ctx.request.body
   const user = ctx.state.user
+  const creator = algosdk.mnemonicToSecretKey(process.env.ALGO_MNEMONIC)
 
   if (!signedTxn) ctx.reject('Txn is missing in request body')
 
   const algodClient = algoClient()
   const txnBlob = [
     Buffer.from(Object.values(signedTxn[0])),
-    Buffer.from(signedTxn[1].data),
-    Buffer.from(signedTxn[2].data),
+    Buffer.from(Object.values(signedTxn[1])),
+    Buffer.from(Object.values(signedTxn[2])),
     Buffer.from(Object.values(signedTxn[3])),
   ]
+  const txnObj = [
+    algosdk.decodeSignedTransaction(txnBlob[0]).txn,
+    algosdk.decodeUnsignedTransaction(txnBlob[1]),
+    algosdk.decodeUnsignedTransaction(txnBlob[2]),
+    algosdk.decodeSignedTransaction(txnBlob[3]).txn,
+  ]
+  const txnBytes = txnObj.map((txn) => algosdk.encodeUnsignedTransaction(txn))
+  const txnBuffer = Buffer.concat(txnBytes)
+
+  if (!signature || !algosdk.verifyBytes(txnBuffer, Buffer.from(Object.values(signature)), creator.addr))
+    return ctx.badRequest('Transactions manipulated')
+
+  // TODO: Should we also check here for groupID?
+
+  txnBlob[1] = txnObj[1].signTxn(creator.sk)
+  txnBlob[2] = txnObj[2].signTxn(creator.sk)
+
   const { txId } = await algodClient.sendRawTransaction(txnBlob).do()
   const result = await algosdk.waitForConfirmation(algodClient, txId, 4)
 
