@@ -51,15 +51,18 @@ module.exports = {
         const isStatusChange = key === 'status'
         const isDeveloperNftChange = key === 'developer_nft'
         const isFeeNftChange = key === 'fee_nft'
+        const isSwapGroupTxnId = key === 'swap_group_txn_id'
         const wasPreviouslyUndefined = !oldCarbonDocument[key]
+        const isSwappedCurrentState = oldCarbonDocument.status === 'swapped'
         const currentStateAllowsChanges = ['pending', 'accepted'].includes(oldCarbonDocument.status)
 
         if (isStatusChange) continue
         if (isDeveloperNftChange && wasPreviouslyUndefined) continue
         if (isFeeNftChange && wasPreviouslyUndefined) continue
-
-        // Allow changes if state is pending or accepted, otherwise deny any change
-        if (!currentStateAllowsChanges) delete newDocument[key]
+        if (isSwapGroupTxnId && !isSwappedCurrentState) continue
+        if (!currentStateAllowsChanges)
+          // Allow changes if state is pending or accepted, otherwise deny any change
+          delete newDocument[key]
       }
 
       newDocument.oldStatus = oldCarbonDocument.status

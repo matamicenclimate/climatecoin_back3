@@ -171,6 +171,9 @@
     "user": {
       "plugin": "users-permissions",
       "model": "user"
+    },
+    "swap_group_txn_id": {
+      "type": "string"
     }
   }
 }

@@ -358,6 +358,9 @@ async function prepareSwap(ctx) {
 
   const swapGroupTxn = [unfreezeTxn, transferTxn, swapTxn]
   const [unfreeze, transfer, swap] = algosdk.assignGroupID(swapGroupTxn)
+  const groupID = swap.group.toString('base64')
+
+  await strapi.services['carbon-documents'].update({ id }, { status: 'claimed', swap_group_txn_id: groupID })
 
   const encodedTxns = [unfreeze, transfer, swap].map((txn) => algosdk.encodeUnsignedTransaction(txn))
 
@@ -376,6 +379,14 @@ async function swap(ctx) {
   }
   const algodClient = algoClient()
   const txnBlob = signedTxn.map((txn) => Buffer.from(Object.values(txn)))
+
+  const signedTxns = txnBlob.map((stxn) => algosdk.decodeSignedTransaction(stxn))
+  const signedTxnsObject = signedTxns.map((stxn) => stxn.txn)
+
+  for (const stxn of signedTxnsObject) {
+    if (carbonDocument.swap_group_txn_id !== stxn.group.toString('base64'))
+      return ctx.badRequest('Transactions manipulated')
+  }
 
   const { txId } = await algodClient.sendRawTransaction(txnBlob).do()
   const result = await algosdk.waitForConfirmation(algodClient, txId, 3)

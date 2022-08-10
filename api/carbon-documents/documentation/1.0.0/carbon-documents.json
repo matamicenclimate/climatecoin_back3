@@ -1724,6 +1724,9 @@
                 "type": "string"
               }
             }
+          },
+          "swap_group_txn_id": {
+            "type": "string"
           }
         }
       },
@@ -1833,6 +1836,9 @@
             "type": "string"
           },
           "user": {
+            "type": "string"
+          },
+          "swap_group_txn_id": {
             "type": "string"
           },
           "created_by": {
