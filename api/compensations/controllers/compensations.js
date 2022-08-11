@@ -180,7 +180,6 @@ async function prepareClaimCertificate(ctx) {
 
   // TODO Use indexer to has updated fields
   const compensationNft = await strapi.services.nfts.findOne({ id: compensation.compensation_nft })
-  const nftsToBurn = compensation.nfts.map((nft) => Number(nft.asa_id))
 
   const compensationNftOptinTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
     from: user.publicAddress,
@@ -190,22 +189,22 @@ async function prepareClaimCertificate(ctx) {
     suggestedParams,
   })
 
-  const approveBurnTxn = algosdk.makeApplicationCallTxnFromObject({
+  const sendCertificateNFTTxn = algosdk.makeApplicationCallTxnFromObject({
     from: creator.addr,
     appIndex: Number(process.env.APP_ID),
     appArgs: [
-      algorandUtils.getMethodByName('approve_burn').getSelector(),
+      algorandUtils.getMethodByName('send_burn_nft_certificate').getSelector(),
       algosdk.encodeUint64(1),
       algosdk.encodeUint64(0),
     ],
-    foreignAssets: [Number(compensationNft.asa_id), ...nftsToBurn, Number(process.env.CLIMATECOIN_ASA_ID)],
-    accounts: [algosdk.getApplicationAddress(Number(process.env.DUMP_APP_ID)), user.publicAddress],
-    foreignApps: [Number(compensation.contract_id), Number(process.env.DUMP_APP_ID)],
+    foreignAssets: [Number(compensationNft.asa_id)],
+    accounts: [user.publicAddress],
+    foreignApps: [Number(compensation.contract_id)],
     onComplete: algosdk.OnApplicationComplete.NoOpOC,
     suggestedParams,
   })
 
-  approveBurnTxn.fee += (6 + nftsToBurn.length) * algosdk.ALGORAND_MIN_TX_FEE
+  sendCertificateNFTTxn.fee += 2 * algosdk.ALGORAND_MIN_TX_FEE
 
   const compensationClaimGroupTxn = [compensationNftOptinTxn, sendCertificateNFTTxn]
   const [optin, send] = algosdk.assignGroupID(compensationClaimGroupTxn)
@@ -290,6 +289,13 @@ async function mint(ctx) {
     const consolidationPdfCid = await uploadFileToIPFS(consolidationPdfBuffer, 'application/pdf', compensation.id)
 
     const compensationNftId = await algoFn.mintCompensationNft(algodclient, creator, compensation, consolidationPdfCid)
+    const approveTxnId = await algoFn.approve_burn(
+      algodclient,
+      creator,
+      compensation.user,
+      compensation,
+      compensationNftId,
+    )
 
     const updatedCompensation = await strapi.services['compensations'].update(
       { id },
@@ -298,6 +304,7 @@ async function mint(ctx) {
         state: 'minted',
         compensation_nft: compensationNftId,
         consolidation_certificate_ipfs_cid: consolidationPdfCid,
+        approve_txn_id: approveTxnId,
       },
     )
 
@@ -336,7 +343,7 @@ const algoFn = {
     })
 
     try {
-      const result = await atc.execute(algodclient, 2)
+      const result = await atc.execute(algodclient, 4)
       const mintedNftId = result.methodResults[0].returnValue
       const mintedTxnId = result.methodResults[0].txID
 
@@ -356,6 +363,33 @@ const algoFn = {
     } catch (error) {
       throw strapi.errors.badRequest(error)
     }
+  },
+  approve_burn: async (algodclient, creator, user, compensation, compensationNftId) => {
+    const nftsToBurn = compensation.nfts.map((nft) => Number(nft.asa_id))
+    const suggestedParams = await algodclient.getTransactionParams().do()
+    const compensationNft = await strapi.services.nfts.findOne({ id: compensationNftId })
+
+    const approveBurnTxn = algosdk.makeApplicationCallTxnFromObject({
+      from: creator.addr,
+      appIndex: Number(process.env.APP_ID),
+      appArgs: [
+        algorandUtils.getMethodByName('approve_burn').getSelector(),
+        algosdk.encodeUint64(1),
+        algosdk.encodeUint64(0),
+      ],
+      foreignAssets: [Number(compensationNft.asa_id), ...nftsToBurn, Number(process.env.CLIMATECOIN_ASA_ID)],
+      accounts: [algosdk.getApplicationAddress(Number(process.env.DUMP_APP_ID)), user.publicAddress],
+      foreignApps: [Number(compensation.contract_id), Number(process.env.DUMP_APP_ID)],
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      suggestedParams,
+    })
+
+    approveBurnTxn.fee += (6 + nftsToBurn.length) * algosdk.ALGORAND_MIN_TX_FEE
+
+    const signedApproveTxn = approveBurnTxn.signTxn(creator.sk)
+    const { txId } = await algodclient.sendRawTransaction(signedApproveTxn).do()
+    await algosdk.waitForConfirmation(algodclient, txId, 4)
+    return txId
   },
 }
 module.exports = {
