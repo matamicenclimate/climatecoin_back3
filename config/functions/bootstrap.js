@@ -25,8 +25,8 @@ const authenticatedPermissions = {
   },
   application: {
     activities: ['me'],
-    'carbon-documents': ['claim', 'create', 'find', 'swap', 'findone', 'prepareswap'],
-    compensations: ['calculate', 'findone', 'claimcertificate', 'create', 'me', 'prepareclaimcertificate'],
+    'carbon-documents': ['claim', 'create', 'find', 'swap', 'findone', 'prepareswap', 'paginated'],
+    compensations: ['calculate', 'findone', 'claimcertificate', 'create', 'me', 'prepareclaimcertificate', 'paginated'],
     currency: ['find'],
     info: ['find'],
     notifications: ['me', 'markallasread'],
