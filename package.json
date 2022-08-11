@@ -22,7 +22,7 @@
     "@pinata/sdk": "^1.1.26",
     "@sentry/node": "^7.4.1",
     "@strapi/plugin-sentry": "4.1.11",
-    "algosdk": "1.17.0",
+    "algosdk": "1.19.0",
     "axios": "^0.27.2",
     "config": "^3.3.6",
     "date-fns": "^2.28.0",
@@ -45,11 +45,13 @@
     "strapi-plugin-sentry": "^3.6.10",
     "strapi-plugin-upload": "3.6.8",
     "strapi-plugin-users-permissions": "3.6.8",
-    "strapi-plugin-web3-auth": "file:../../SmartErasmus-React/strapi-plugin-web3-auth",
+    "algorand-session-wallet": "https://github.com/fernando-deka/algorand-session-wallet#magic-link",
+    "koa2-ratelimit": "^1.1.1",
+    "strapi-utils": "^3.6.10",
+    "tweetnacl": "^1.0.3",
     "strapi-provider-email-mailgun": "^3.6.8",
     "strapi-provider-upload-climate": "file:providers/strapi-provider-upload-climate",
-    "strapi-provider-upload-minio": "file:providers/strapi-provider-upload-minio",
-    "strapi-utils": "3.6.8"
+    "strapi-provider-upload-minio": "file:providers/strapi-provider-upload-minio"
   },
   "author": {
     "name": "Deka"
