@@ -1215,6 +1215,12 @@
           },
           "contract_id": {
             "type": "integer"
+          },
+          "approve_txn_id": {
+            "type": "string"
+          },
+          "claim_group_id": {
+            "type": "string"
           }
         }
       },
@@ -1259,6 +1265,12 @@
           },
           "contract_id": {
             "type": "integer"
+          },
+          "approve_txn_id": {
+            "type": "string"
+          },
+          "claim_group_id": {
+            "type": "string"
           },
           "created_by": {
             "type": "string"

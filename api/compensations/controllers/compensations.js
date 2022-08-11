@@ -207,16 +207,20 @@ async function prepareClaimCertificate(ctx) {
 
   approveBurnTxn.fee += (6 + nftsToBurn.length) * algosdk.ALGORAND_MIN_TX_FEE
 
-  const compensationClaimGroupTxn = [compensationNftOptinTxn, approveBurnTxn]
-  const [optin, approve] = algosdk.assignGroupID(compensationClaimGroupTxn)
+  const compensationClaimGroupTxn = [compensationNftOptinTxn, sendCertificateNFTTxn]
+  const [optin, send] = algosdk.assignGroupID(compensationClaimGroupTxn)
 
   const encodedOptinTxn = algosdk.encodeUnsignedTransaction(optin)
-  const signedApproveTxn = await approve.signTxn(creator.sk)
+  const encodedSendTxn = algosdk.encodeUnsignedTransaction(send)
+  // const signedApproveTxn = await approve.signTxn(creator.sk)
+
+  const groupID = send.group.toString('base64')
+  await strapi.services.compensations.update({ id }, { state: 'minted', claim_group_id: groupID })
 
   return {
     compensationId: id,
     encodedOptinTxn,
-    signedApproveTxn,
+    encodedSendTxn,
   }
 }
 
@@ -224,14 +228,30 @@ async function claimCertificate(ctx) {
   const { id } = ctx.params
   const { signedTxn } = ctx.request.body
   const user = ctx.state.user
+  const creator = algosdk.mnemonicToSecretKey(process.env.ALGO_MNEMONIC)
   // TODO Use indexer to has updated fields
   const compensation = await strapi.services.compensations.findOne({ id })
 
+  if (compensation.id !== id) return ctx.badRequest('Compensation not found')
   if (!signedTxn) throw new Error('Txn is missing in request body')
   if (compensation.user.id !== user.id) return ctx.unauthorized()
 
   const algodClient = algoClient()
-  const txnBlob = [Buffer.from(Object.values(signedTxn[0])), Buffer.from(signedTxn[1].data)]
+  const txnBlob = [Buffer.from(Object.values(signedTxn[0])), Buffer.from(Object.values(signedTxn[1]))]
+
+  const txnObj = [algosdk.decodeSignedTransaction(txnBlob[0]).txn, algosdk.decodeUnsignedTransaction(txnBlob[1])]
+
+  for (const txn of txnObj) {
+    if (compensation.claim_group_id !== txn.group.toString('base64')) return ctx.badRequest('Transactions manipulated')
+    // To calculate again the groupid hash
+    txn.group = undefined
+  }
+
+  const computedGroupID = algosdk.computeGroupID(txnObj).toString('base64')
+  if (compensation.claim_group_id !== computedGroupID) return ctx.badRequest('Transactions manipulated')
+
+  txnBlob[1] = algosdk.decodeUnsignedTransaction(txnBlob[1]).signTxn(creator.sk)
+
   const { txId } = await algodClient.sendRawTransaction(txnBlob).do()
   await algosdk.waitForConfirmation(algodClient, txId, 4)
 
